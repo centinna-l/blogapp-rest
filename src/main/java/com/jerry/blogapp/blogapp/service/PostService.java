@@ -1,13 +1,14 @@
 package com.jerry.blogapp.blogapp.service;
 
 import com.jerry.blogapp.blogapp.payload.PostDto;
+import com.jerry.blogapp.blogapp.payload.PostResponse;
 
 import java.util.List;
 
 public interface PostService {
     PostDto createPost(PostDto postDto);
 
-    List<PostDto> getAllPosts(int pageNo, int pageSize);
+    PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir);
 
     PostDto getPostById(Long id);
 

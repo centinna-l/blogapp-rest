@@ -3,6 +3,7 @@ package com.jerry.blogapp.blogapp.service.impl;
 import com.jerry.blogapp.blogapp.exceptions.ResourceNotFoundException;
 import com.jerry.blogapp.blogapp.models.Post;
 import com.jerry.blogapp.blogapp.payload.PostDto;
+import com.jerry.blogapp.blogapp.payload.PostResponse;
 import com.jerry.blogapp.blogapp.repository.PostRepository;
 import com.jerry.blogapp.blogapp.service.PostService;
 import org.springframework.data.domain.Page;
@@ -41,12 +42,21 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> pages = postRepository.findAll(pageable);
 
         List<Post> posts = pages.getContent();
-        return posts.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
+        List<PostDto> contents = posts.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
+        PostResponse postResponse = new PostResponse();
+        postResponse.setPosts(contents);
+        postResponse.setPageNo(pages.getNumber());
+        postResponse.setPageSize(pages.getSize());
+        postResponse.setTotalElements(pages.getNumberOfElements());
+        postResponse.setTotalPages(pages.getTotalPages());
+        postResponse.setLast(pages.isLast());
+        return postResponse;
     }
 
     @Override
