@@ -6,6 +6,7 @@ import com.jerry.blogapp.blogapp.payload.PostDto;
 import com.jerry.blogapp.blogapp.payload.PostResponse;
 import com.jerry.blogapp.blogapp.repository.PostRepository;
 import com.jerry.blogapp.blogapp.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +23,12 @@ public class PostServiceImpl implements PostService {
 
     // constructor based dependency injection
     private PostRepository postRepository;
+    private ModelMapper modelMapper;
 
     // we can omit @Autowired if the class only has one constructor
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -82,20 +85,21 @@ public class PostServiceImpl implements PostService {
     }
 
 
-    private static Post mapToEntity(PostDto postDto) {
-        Post post = new Post();
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
-        return post;
+    private Post mapToEntity(PostDto postDto) {
+//        Post post = new Post();
+//        post.setTitle(postDto.getTitle());
+//        post.setDescription(postDto.getDescription());
+//        post.setContent(postDto.getContent());
+        return modelMapper.map(postDto, Post.class);
     }
 
-    private static PostDto mapToDto(Post result) {
-        PostDto converted = new PostDto();
-        converted.setId(result.getId());
-        converted.setTitle(result.getTitle());
-        converted.setDescription(result.getDescription());
-        converted.setContent(result.getContent());
-        return converted;
+    private PostDto mapToDto(Post post) {
+        //PostDto converted = ;
+//        converted.setId(result.getId());
+//        converted.setTitle(result.getTitle());
+//        converted.setDescription(result.getDescription());
+//        converted.setContent(result.getContent());
+
+        return modelMapper.map(post, PostDto.class);
     }
 }

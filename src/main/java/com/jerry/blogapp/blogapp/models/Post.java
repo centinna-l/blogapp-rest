@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Primary;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
