@@ -1,5 +1,6 @@
 package com.jerry.blogapp.blogapp.service.impl;
 
+import com.jerry.blogapp.blogapp.exceptions.BlogApiException;
 import com.jerry.blogapp.blogapp.exceptions.ResourceNotFoundException;
 import com.jerry.blogapp.blogapp.models.Comment;
 import com.jerry.blogapp.blogapp.models.Post;
@@ -8,6 +9,8 @@ import com.jerry.blogapp.blogapp.payload.PostDto;
 import com.jerry.blogapp.blogapp.repository.CommentRepository;
 import com.jerry.blogapp.blogapp.repository.PostRepository;
 import com.jerry.blogapp.blogapp.service.CommentService;
+import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,19 +44,20 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream().map(comment -> mapToDto(comment)).collect(Collectors.toList());
     }
 
-    @Override
-    public CommentDto getCommentById(Long postId, Long commentId) {
-        return null;
-    }
 
     @Override
-    public CommentDto updateComment(Long postId, Long commentId, CommentDto commentDto) {
-        return null;
-    }
+    public void deleteComment(Long postID, Long commentID) {
+        Post post = postRepository.findById(postID).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id", postID));
 
-    @Override
-    public void deleteComment(Long postId, Long commentId) {
+        Comment comment = commentRepository.findById(commentID).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentID));
 
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Post and comment are not associated!");
+        }
+
+        commentRepository.deleteById(commentID);
     }
 
     @Override
@@ -61,6 +65,41 @@ public class CommentServiceImpl implements CommentService {
         System.out.println(name);
         List<Comment> comments = commentRepository.findCommentsByName("Jerry Joy");
         return comments.stream().map(comment -> mapToDto(comment)).collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto getCommentByID(Long postID, Long commentID) {
+        Post post = postRepository.findById(postID).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postID));
+
+        //
+        Comment comment = commentRepository.findById(commentID).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentID));
+
+        System.out.println(comment.getPost().getId() + " Post : " + post.getId());
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Post and Comments are not associated.");
+        }
+        return mapToDto(comment);
+    }
+
+    @Override
+    public CommentDto updateCommentByID(Long postID, Long commentID, CommentDto commentDto) {
+        Post post = postRepository.findById(postID).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id", postID));
+
+        Comment comment = commentRepository.findById(commentID).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentID));
+
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Post and comment are not associated!");
+        }
+        System.out.println("Name: " + commentDto.getName());
+        comment.setName(commentDto.getName());
+        comment.setEmail(comment.getEmail());
+        comment.setBody(commentDto.getBody());
+
+        Comment result = commentRepository.save(comment);
+        return mapToDto(result);
     }
 
 

@@ -15,11 +15,13 @@ public interface CommentService {
 
     List<CommentDto> getALlComments(long postID, int pageNo, int paeSize, String sortBy, String sortDir);
 
-    CommentDto getCommentById(Long postId, Long commentId);
-
-    CommentDto updateComment(Long postId, Long commentId, CommentDto commentDto);
 
     void deleteComment(Long postId, Long commentId);
 
     List<CommentDto> getALlCommentsByName(String name);
+
+    CommentDto getCommentByID(Long postID,Long commentID);
+
+    CommentDto updateCommentByID(Long postID,Long commentID, CommentDto commentDto);
+
 }

@@ -19,7 +19,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/posts/{postID}/comment")
+    @PostMapping("/post/{postID}/comment")
     public ResponseEntity<CommentDto> createPost(
             @PathVariable("postID") Long postID,
             @RequestBody CommentDto commentDto
@@ -29,7 +29,7 @@ public class CommentController {
     }
 
 
-    @GetMapping("/posts/{postID}/comment")
+    @GetMapping("/post/{postID}/comment")
     public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(
             @PathVariable("postID") Long postID
     ) {
@@ -38,11 +38,36 @@ public class CommentController {
     }
 
 
-    @GetMapping("/posts/{postID}/comment/name")
+    @GetMapping("/post/{postID}/comment/name")
     public ResponseEntity<List<CommentDto>> getAllCommentsByName(
             @RequestBody String name
     ) {
         System.out.println(name);
         return new ResponseEntity<List<CommentDto>>(commentService.getALlCommentsByName(name), HttpStatus.OK);
+    }
+
+    @GetMapping("/post/{postID}/comment/{commentID}")
+    public ResponseEntity<CommentDto> getCommentbyID(
+            @PathVariable("postID") Long postID,
+            @PathVariable("commentID") Long commentID) {
+        return new ResponseEntity<>(commentService.getCommentByID(postID, commentID), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/post/{postID}/comment/{commentID}")
+    public ResponseEntity<CommentDto> updateCommentByID(
+            @PathVariable("postID") Long postID,
+            @PathVariable("commentID") Long commentID,
+            @RequestBody CommentDto commentDto) {
+        return new ResponseEntity<>(commentService.updateCommentByID(postID, commentID, commentDto), HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/post/{postID}/comment/{commentID}")
+    public ResponseEntity<String> deleteComment(
+            @PathVariable("postID") Long postID,
+            @PathVariable("commentID") Long commentID) {
+        commentService.deleteComment(postID, commentID);
+        return new ResponseEntity<>("Comment Deleted!", HttpStatus.OK);
     }
 }
