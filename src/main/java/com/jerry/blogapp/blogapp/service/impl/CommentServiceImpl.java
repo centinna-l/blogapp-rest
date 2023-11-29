@@ -67,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDto> getALlCommentsByName(String name) {
         System.out.println(name);
-        List<Comment> comments = commentRepository.findCommentsByName("Jerry Joy");
+        List<Comment> comments = commentRepository.findCommentsByName(name);
         return comments.stream().map(comment -> mapToDto(comment)).collect(Collectors.toList());
     }
 

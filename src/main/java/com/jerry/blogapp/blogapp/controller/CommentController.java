@@ -3,6 +3,7 @@ package com.jerry.blogapp.blogapp.controller;
 
 import com.jerry.blogapp.blogapp.payload.CommentDto;
 import com.jerry.blogapp.blogapp.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class CommentController {
     @PostMapping("/post/{postID}/comment")
     public ResponseEntity<CommentDto> createPost(
             @PathVariable("postID") Long postID,
-            @RequestBody CommentDto commentDto
+            @Valid @RequestBody CommentDto commentDto
     ) {
         System.out.println(commentDto.getName() + " " + commentDto.getEmail() + " " + commentDto.getBody());
         return new ResponseEntity<CommentDto>(commentService.createComment(postID, commentDto), HttpStatus.CREATED);
@@ -40,9 +41,9 @@ public class CommentController {
 
     @GetMapping("/post/{postID}/comment/name")
     public ResponseEntity<List<CommentDto>> getAllCommentsByName(
-            @RequestBody String name
+            @RequestParam String name
     ) {
-        System.out.println(name);
+        System.out.println();
         return new ResponseEntity<List<CommentDto>>(commentService.getALlCommentsByName(name), HttpStatus.OK);
     }
 
@@ -58,7 +59,7 @@ public class CommentController {
     public ResponseEntity<CommentDto> updateCommentByID(
             @PathVariable("postID") Long postID,
             @PathVariable("commentID") Long commentID,
-            @RequestBody CommentDto commentDto) {
+            @Valid @RequestBody CommentDto commentDto) {
         return new ResponseEntity<>(commentService.updateCommentByID(postID, commentID, commentDto), HttpStatus.OK);
     }
 
