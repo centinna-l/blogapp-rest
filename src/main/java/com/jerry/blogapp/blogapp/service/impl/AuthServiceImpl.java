@@ -7,6 +7,8 @@ import com.jerry.blogapp.blogapp.payload.LoginDto;
 import com.jerry.blogapp.blogapp.payload.RegisterDto;
 import com.jerry.blogapp.blogapp.repository.RoleRepository;
 import com.jerry.blogapp.blogapp.repository.UserRepository;
+import com.jerry.blogapp.blogapp.security.JwtAuthenticationFilter;
+import com.jerry.blogapp.blogapp.security.JwtTokenProvider;
 import com.jerry.blogapp.blogapp.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,28 +31,34 @@ public class AuthServiceImpl implements AuthService {
 
     private PasswordEncoder passwordEncoder;
 
+    private JwtTokenProvider jwtTokenProvider;
+
     public AuthServiceImpl(
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
             RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public String login(LoginDto loginDto) {
-
+        System.out.println("Login Implementation");
         Authentication authentication = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(
                                 loginDto.getUsernameOrEmail(),
                                 loginDto.getPassword()));
-
+        System.out.println("After Authenticate");
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User Login Successfully";
+        String token = jwtTokenProvider.generateJwt(authentication);
+        System.out.print("Token: " + token);
+        return token;
     }
 
     @Override

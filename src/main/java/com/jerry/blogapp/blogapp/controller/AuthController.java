@@ -1,6 +1,7 @@
 package com.jerry.blogapp.blogapp.controller;
 
 
+import com.jerry.blogapp.blogapp.payload.JwtAuthResponse;
 import com.jerry.blogapp.blogapp.payload.LoginDto;
 import com.jerry.blogapp.blogapp.payload.RegisterDto;
 import com.jerry.blogapp.blogapp.service.AuthService;
@@ -23,9 +24,11 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-        String response = authService.login(loginDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto) {
+        String token = authService.login(loginDto);
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setToken(token);
+        return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
     }
 
     @PostMapping(value = {"/register", "/signup"})
